@@ -27,3 +27,7 @@ services:
       - POSTGRES_DB=allstore
       - POSTGRES_USER=allstore
       - POSTGRES_PASSWORD=allstore
+    expose:
+      - "5432"
+    ports:
+      - "5432"

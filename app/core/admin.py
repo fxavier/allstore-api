@@ -26,3 +26,11 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Order)
+admin.site.register(models.OrderItem)
+admin.site.register(models.Item)
+admin.site.register(models.Category)
+admin.site.register(models.Address)
+admin.site.register(models.Payment)
+admin.site.register(models.Refund)
+admin.site.register(models.Coupon)
