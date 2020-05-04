@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.shortcuts import reverse
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
 
 
 class UserManager(BaseUserManager):
@@ -70,6 +70,48 @@ class Item(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return reverse("shop:product", kwargs={
+            'slug': self.slug
+        })
+
+    def get_add_to_cart_url(self):
+        return reverse("shop:add-to-cart", kwargs={
+            'slug': self.slug
+        })
+
+    def get_remove_from_cart_url(self):
+        return reverse("shop:remove-from-cart", kwargs={
+            'slug': self.slug
+        })
+
+
+class Variation(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)  # size
+
+    class Meta:
+        unique_together = (
+            ('item', 'name')
+        )
+
+    def __str__(self):
+        return self.name
+
+
+class ItemVariation(models.Model):
+    variation = models.ForeignKey(Variation, on_delete=models.CASCADE)
+    value = models.CharField(max_length=50)  # S,M,L
+    attachment = models.ImageField(blank=True)
+
+    class Meta:
+        unique_together = (
+            ('variation', 'value')
+        )
+
+    def __str__(self):
+        return self.value
+
 
 class OrderItem(models.Model):
     user = models.ForeignKey(
@@ -78,6 +120,7 @@ class OrderItem(models.Model):
     )
     ordered = models.BooleanField(default=False)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item_variations = models.ManyToManyField(ItemVariation)
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
@@ -145,7 +188,7 @@ class Address(models.Model):
     default = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.nome
+        return self.user.email
 
     class Meta:
         verbose_name_plural = 'Addresses'
